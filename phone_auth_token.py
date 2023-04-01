@@ -34,8 +34,10 @@ def get_api_token(refresh_token):
     response = r.json()
     return response.get("data")["api_token"]
 
+
 phone_number = input("Please enter your phone number under the international format (country code + number): ")
 log_code = send_otp_code(phone_number)
 otp_code = input("Please enter the code you've received by sms: ")
 refresh_token = get_refresh_token(otp_code, phone_number)
 print("Here is your Tinder token: " + str(get_api_token(refresh_token)))
+

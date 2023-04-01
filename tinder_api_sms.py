@@ -223,6 +223,15 @@ def all_matches():
     except requests.exceptions.RequestException as e:
         print("Something went wrong. Could not get your match info:", e)
 
+def get_activity_feed():
+    try:
+        url = config.host + '/v1/activity'
+        r = requests.get(url, headers=headers)
+        return r.json()
+    except requests.exceptions.RequestException as e:
+        print("Something went wrong. Could not get your activity feed:", e)
+
+
 # def see_friends():
 #     try:
 #         url = config.host + '/group/friends'
@@ -230,3 +239,36 @@ def all_matches():
 #         return r.json()['results']
 #     except requests.exceptions.RequestException as e:
 #         print("Something went wrong. Could not get your Facebook friends:", e)
+
+def updates_analysis():
+    updates = get_updates('2020-03-01T20:58:00.404Z')
+    your_name = "Kaushik"
+    matches = updates["matches"]
+    for match in matches:
+        messages = match["messages"]
+        if not messages:
+            continue
+
+        long_id = match["_id"]
+        name = long_id[-7:]
+        if "person" in match:
+            person = match["person"]
+            name = person["name"]
+        last_act_date = match["last_activity_date"]
+        print(f"Name: {name} Last Activity Date: {last_act_date}")
+
+        for message in messages:
+            date = message["created_date"]
+            message_str = message["message"]
+            from_id = message["from"]
+            match_id = message["matchId"][:len(from_id)]
+            sender = your_name if from_id == match_id else name
+            print(f"{date}: {message_str}")
+        print()
+
+def meta_analysis():
+    meta = get_meta()
+    print(meta)
+
+updates_analysis()
+meta_analysis()
